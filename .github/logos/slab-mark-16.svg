@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 14" width="16" height="14" role="img" aria-label="Slab">
+  <title>Slab</title>
+  <!--
+    Small-size variant. Below 24px row 2 collapses to one full-width brick:
+    the stagger would close up and read as noise. Three courses remain.
+    4px courses, 1px joints.
+  -->
+  <g fill="#1C1C1C">
+    <rect x="0" y="0" width="7.5" height="4" />
+    <rect x="8.5" y="0" width="7.5" height="4" />
+    <rect x="0" y="5" width="16" height="4" />
+  </g>
+  <rect x="0" y="10" width="16" height="4" fill="#D9492A" />
+</svg>

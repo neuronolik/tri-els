@@ -1,0 +1,12 @@
+.DS_Store
+.npmrc
+.yarnrc
+.vscode/**/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+dist/
+node_modules/
+.astro/
+.wrangler/

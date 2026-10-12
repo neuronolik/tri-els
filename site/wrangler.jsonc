@@ -1,0 +1,23 @@
+// The site, as a Worker that serves only static assets: the built `dist`, at
+// slab-elements.dev. Deployed by hand with `pnpm --filter slab-site deploy`
+// for now. Once the repository is public, Workers Builds can be connected to
+// this same Worker, since its `name` is what it's matched by.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "slab-elements",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+  "routes": [{ "pattern": "slab-elements.dev", "custom_domain": true }],
+
+  // Served at its own domain only: no workers.dev address, and no preview
+  // URLs, so nothing of it is public anywhere else.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  // As Storybook's is in the root's scripts.
+  "send_metrics": false,
+}

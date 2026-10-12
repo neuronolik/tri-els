@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://slab-elements.dev/sitemap.xml

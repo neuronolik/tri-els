@@ -1,0 +1,40 @@
+# Slab is the package at the root. `site` is its marketing site and docs, a
+# private package of its own so its dependencies stay out of Slab's.
+packages:
+  - .
+  - site
+
+# Don't install any package version published less than a week ago (in minutes).
+#
+# A compromised release is usually caught within hours to a couple of days, so
+# waiting a week sidesteps most of that risk. Caret ranges still pick up
+# transitive security patches once they clear the window.
+minimumReleaseAge: 10080
+
+# Install scripts are off by default.
+allowBuilds:
+  # Links the esbuild binary for the current platform.
+  esbuild: true
+
+  # Its postinstall only falls back to fetching a binary. The per-platform
+  # packages it lists as optional dependencies cover us already.
+  rs-module-lexer: false
+
+  # Wrangler's local runtime. Its postinstall only links or falls back to
+  # fetching a binary, and the per-platform packages it lists as optional
+  # dependencies cover us already. A deploy doesn't run it at all.
+  workerd: false
+
+catalog:
+  typescript: ^5.9.3
+
+overrides:
+  # Floors for transitive dependencies with known advisories.
+  koa@<3.0.1: '>=3.0.1'
+  tmp@<=0.2.3: '>=0.2.4'
+
+  # The analyzer walks the AST and hands each node to our plugins, which import
+  # their type guards from our own TypeScript. `SyntaxKind` values shift between
+  # TypeScript releases, so a guard like `isDecorator` silently matches the
+  # wrong node when the two copies disagree. Keep them on one version.
+  '@custom-elements-manifest/analyzer>typescript': 'catalog:'

@@ -1,0 +1,20 @@
+{
+  "name": "slab-site",
+  "private": true,
+  "description": "Slab's marketing site and documentation",
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "deploy": "astro build && wrangler deploy",
+    "deploy:comment": "By hand for now, with your own `wrangler login`. Once Workers Builds is connected to the repository, it builds and deploys on every push to main instead.",
+    "dev": "astro dev",
+    "og": "astro build && pnpm og:generate && astro build",
+    "og:comment": "The cards are read from the built pages, so the site's built first, then again so they're copied into it.",
+    "og:generate": "node og/generate.js",
+    "preview": "astro preview"
+  },
+  "devDependencies": {
+    "astro": "^7.3.5",
+    "wrangler": "^4.147.0"
+  }
+}

@@ -1,0 +1,20 @@
+# Keeps the pinned actions current. Every action is pinned to a commit, with
+# its version in a comment, since a tag can be moved to other code; this opens
+# a pull request when a newer release is out.
+#
+# Updates wait a week after a release, as `minimumReleaseAge` does for npm
+# packages, since a compromised release is usually caught within days.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/pnpm
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns:
+          - '*'

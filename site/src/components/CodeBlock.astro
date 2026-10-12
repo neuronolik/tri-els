@@ -1,0 +1,51 @@
+---
+// Highlighted code on ink, with its filename or language above it.
+import { Code } from 'astro:components';
+import theme from '../lib/code-theme.ts';
+
+interface Props {
+  code: string;
+  label?: string;
+  lang: 'css' | 'html' | 'js' | 'json' | 'jsx' | 'sh' | 'svelte' | 'ts' | 'vue';
+}
+
+const { code, label, lang } = Astro.props;
+---
+
+<figure class="code">
+  {label && <figcaption>{label}</figcaption>}
+  <Code code={code.trim()} lang={lang} theme={theme} />
+</figure>
+
+<style>
+  .code {
+    background-color: var(--ink);
+    border: 3px solid var(--ink);
+    /* Ink in either theme, for the highlighting drawn on it. */
+    color-scheme: light;
+    margin: 0;
+    min-inline-size: 0;
+  }
+
+  figcaption {
+    border-block-end: 1px solid var(--rule-on-ink);
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.625rem 1rem;
+  }
+
+  .code :global(pre) {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.7;
+    margin: 0;
+    overflow-x: auto;
+    padding: 1rem 1.25rem;
+  }
+
+  /* A scrolling region of code can be reached and scrolled with the keyboard. */
+  .code :global(pre:focus-visible) {
+    outline-offset: -3px;
+  }
+</style>

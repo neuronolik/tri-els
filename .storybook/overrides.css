@@ -1,0 +1,48 @@
+.docs-story {
+  /* The element containing the component on the overview page. */
+  & > div {
+    padding: 0.35rem !important;
+  }
+}
+
+/* The toolbar right above the component on the overview page. */
+.sb-bar {
+  display: none !important;
+}
+
+/* The padding left over from the hidden toolbar on the overview page. */
+.sbdocs:has(> .sb-bar) {
+  padding-top: 0 !important;
+}
+
+/* The "name" column can get pretty long and wraps, making it hard to read. */
+.docblock-argstable-body tr td:first-of-type {
+  white-space: nowrap !important;
+}
+
+/* The "description" column can get pretty long and wraps, making it hard to read. */
+.docblock-argstable-body tr td:nth-of-type(2) span {
+  white-space: nowrap !important;
+}
+
+/* The "default" column can get pretty long and wraps, making it hard to read. */
+.docblock-argstable-body tr td:nth-of-type(3) span {
+  white-space: nowrap !important;
+}
+
+/* The Hide Code button's container. */
+*:has(> .docblock-code-toggle) {
+  display: none !important;
+}
+
+/* The Hide Code button. */
+.docblock-code-toggle {
+  display: none !important;
+}
+
+/* The tooltip shown when `argTypes[key].table.type` is clicked. */
+[data-popper-interactive] * {
+  overflow: visible !important;
+  text-wrap: pretty !important;
+  width: auto !important;
+}

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="Slab" shape-rendering="crispEdges">
+  <title>Slab</title>
+  <!--
+    The avatar tile at 48px, for favicon-48.png and the ICO, drawn on whole
+    pixels for the reason slab-favicon-32.svg gives: 30 wide, about 0.64 of the
+    tile, with 4px courses and 2px joints. Row one splits 14 + 2 + 14 and row
+    two 7 + 2 + 21, the mark's proportions at this size.
+  -->
+  <rect width="48" height="48" fill="#1C1C1C" />
+  <g fill="#F2F2EF">
+    <rect x="9" y="16" width="14" height="4" />
+    <rect x="25" y="16" width="14" height="4" />
+    <rect x="9" y="22" width="7" height="4" />
+    <rect x="18" y="22" width="21" height="4" />
+  </g>
+  <rect x="9" y="28" width="30" height="4" fill="#D9492A" />
+</svg>

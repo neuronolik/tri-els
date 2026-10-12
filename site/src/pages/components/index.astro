@@ -1,0 +1,145 @@
+---
+import Base from '../../layouts/Base.astro';
+import { componentsByGroup } from '../../lib/index-markdown.ts';
+import { inline } from '../../lib/prose.ts';
+
+const byGroup = await componentsByGroup();
+const count = byGroup.reduce((total, { components }) => total + components.length, 0);
+const base = import.meta.env.BASE_URL;
+---
+
+<Base
+  description={`All ${count} of Slab's headless Web Components, each built on a native element.`}
+  markdown="components.md"
+  title="Components · Slab"
+>
+  <div class="page">
+    <header class="intro">
+      <p class="eyebrow">Components</p>
+      <h1>{count} elements</h1>
+      <p>
+        Every one is built on a native element, or an ARIA role when the
+        platform doesn't have one. Each page shows a styled example next to the
+        headless markup, so you can see what's possible — and what's yours to
+        decide.
+      </p>
+    </header>
+
+    {
+      byGroup.map(({ components, group }) => (
+        <section aria-labelledby={`group-${group}`}>
+          <h2 id={`group-${group}`}>{group}</h2>
+          <ul class="grid">
+            {components.map((component) => (
+              <li>
+                <a href={`${base}components/${component.id}/`}>
+                  <span class="title">{component.data.title}</span>
+                  <span class="tag">&lt;{component.data.tags[0]}&gt;</span>
+                  <span class="summary" set:html={inline(component.data.summary)} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .page {
+    display: grid;
+    gap: 3rem;
+    margin-inline: auto;
+    max-inline-size: 78rem;
+    padding: 2.5rem var(--gutter) 4rem;
+  }
+
+  .intro {
+    border-block-end: 4px solid var(--ink);
+    display: grid;
+    gap: 0.75rem;
+    padding-block-end: 1.5rem;
+
+    p:last-child {
+      font-size: 1.25rem;
+      margin: 0;
+      max-inline-size: 52ch;
+    }
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 3.75rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin: 0 0 1rem;
+  }
+
+  .grid {
+    border-block-start: 1px solid var(--ink);
+    border-inline-start: 1px solid var(--ink);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    border-block-end: 1px solid var(--ink);
+    border-inline-end: 1px solid var(--ink);
+  }
+
+  a {
+    background-color: var(--paper);
+    block-size: 100%;
+    display: grid;
+    gap: 0.375rem;
+    padding: 1rem 1.125rem;
+    text-decoration: none;
+
+    &:hover {
+      background-color: var(--ink);
+      color: var(--paper);
+
+      .tag,
+      .summary {
+        color: var(--dim);
+      }
+    }
+
+    &:focus-visible {
+      outline-offset: -3px;
+    }
+  }
+
+  .title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .tag {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  .summary {
+    font-size: 0.9375rem;
+  }
+
+  .summary :global(code) {
+    color: inherit;
+  }
+
+  a:hover .summary :global(code) {
+    background-color: transparent;
+    border-color: var(--dim);
+  }
+</style>

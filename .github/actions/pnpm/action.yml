@@ -1,0 +1,29 @@
+name: Set Up Node And PNPM
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      name: Install Node.js
+      with:
+        node-version: 22.12.0
+    - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
+      name: Install PNPM
+      # No `version` here on purpose. Without one the action reads
+      # `packageManager` from `package.json`, so there's only one place to
+      # bump pnpm and CI can't drift from what everyone runs locally.
+      with:
+        run_install: false
+    - name: Get PNPM store path
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+    - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      name: Set up PNPM cache
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install

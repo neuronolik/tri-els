@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Slab" shape-rendering="crispEdges">
+  <title>Slab</title>
+  <!--
+    The avatar tile at 32px, for favicon-32.png and the ICO. slab-favicon.svg scales
+    the mark by 1.7, which puts its edges between pixels and blurs them at this
+    size. This one is drawn on whole pixels: 20 wide, about 0.64 of the tile as
+    in slab-favicon.svg, with 3px courses and 1px joints. Row one splits 9 + 1 + 10,
+    the nearest whole pixels to an even split.
+  -->
+  <rect width="32" height="32" fill="#1C1C1C" />
+  <g fill="#F2F2EF">
+    <rect x="6" y="10" width="9" height="3" />
+    <rect x="16" y="10" width="10" height="3" />
+    <rect x="6" y="14" width="5" height="3" />
+    <rect x="12" y="14" width="14" height="3" />
+  </g>
+  <rect x="6" y="18" width="20" height="3" fill="#D9492A" />
+</svg>

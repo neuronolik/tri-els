@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="Slab" shape-rendering="crispEdges">
+  <title>Slab</title>
+  <!--
+    The avatar tile at 16px, for favicon-16.png and the ICO. Below 24px the
+    mark is slab-mark-16.svg's: row two is one brick. Drawn on whole pixels so
+    nothing blurs: 14 wide with a 1px margin each side, 3px courses and 1px
+    joints, centered with 2px above and 3px below.
+  -->
+  <rect width="16" height="16" fill="#1C1C1C" />
+  <g fill="#F2F2EF">
+    <rect x="1" y="2" width="6" height="3" />
+    <rect x="8" y="2" width="7" height="3" />
+    <rect x="1" y="6" width="14" height="3" />
+  </g>
+  <rect x="1" y="10" width="14" height="3" fill="#D9492A" />
+</svg>

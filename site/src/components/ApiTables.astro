@@ -1,0 +1,248 @@
+---
+// One element's API, from the elements manifest: a table for each kind of
+// thing it has, and none for what it doesn't.
+import { api } from '../lib/elements.ts';
+import { inline } from '../lib/prose.ts';
+
+interface Props {
+  tag: string;
+}
+
+const { tag } = Astro.props;
+const { attributes, events, methods, parts, properties, slots } = api(tag);
+---
+
+<section class="api">
+  <h3><code>&lt;{tag}&gt;</code></h3>
+
+  {
+    attributes.length > 0 && (
+      <div class="table">
+        <table>
+          <caption>Attributes</caption>
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Type</th>
+              <th scope="col">Default</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {attributes.map((attribute) => (
+              <tr>
+                <th scope="row">
+                  <code>{attribute.name}</code>
+                  {attribute.required && <span class="required">Required</span>}
+                </th>
+                <td>{attribute.type && <code>{attribute.type}</code>}</td>
+                <td>{attribute.default && <code>{attribute.default}</code>}</td>
+                <td set:html={inline(attribute.description)} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  {
+    properties.length > 0 && (
+      <div class="table">
+        <table>
+          <caption>Properties</caption>
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Type</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {properties.map((property) => (
+              <tr>
+                <th scope="row">
+                  <code>{property.name}</code>
+                  {property.readonly && <span class="required">Read-only</span>}
+                </th>
+                <td>{property.type && <code>{property.type}</code>}</td>
+                <td set:html={inline(property.description)} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  {
+    methods.length > 0 && (
+      <div class="table">
+        <table>
+          <caption>Methods</caption>
+          <thead>
+            <tr>
+              <th scope="col">Signature</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {methods.map((method) => (
+              <tr>
+                <th scope="row">
+                  <code>{method.signature}</code>
+                </th>
+                <td set:html={inline(method.description)} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  {
+    events.length > 0 && (
+      <div class="table">
+        <table>
+          <caption>Events</caption>
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Type</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {events.map((event) => (
+              <tr>
+                <th scope="row">
+                  <code>{event.name}</code>
+                </th>
+                <td>{event.type && <code>{event.type}</code>}</td>
+                <td set:html={inline(event.description)} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  {
+    slots.length > 0 && (
+      <div class="table">
+        <table>
+          <caption>Slots</caption>
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Type</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {slots.map((slot) => (
+              <tr>
+                <th scope="row">
+                  <code>{slot.name}</code>
+                </th>
+                <td>{slot.type && <code>{slot.type}</code>}</td>
+                <td set:html={inline(slot.description)} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  {
+    parts.length > 0 && (
+      <div class="table">
+        <table>
+          <caption>CSS parts</caption>
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {parts.map((part) => (
+              <tr>
+                <th scope="row">
+                  <code>{part.name}</code>
+                </th>
+                <td set:html={inline(part.description)} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .api {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  /* Wide tables scroll on their own rather than widening the page. */
+  .table {
+    border: 2px solid var(--ink);
+    overflow-x: auto;
+  }
+
+  table {
+    background-color: var(--paper);
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    inline-size: 100%;
+  }
+
+  caption {
+    background-color: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.5rem 0.875rem;
+    text-align: start;
+  }
+
+  th,
+  td {
+    border-block-end: 1px solid var(--page);
+    padding: 0.625rem 0.875rem;
+    text-align: start;
+    vertical-align: top;
+  }
+
+  thead th {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  tbody th {
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .required {
+    color: var(--ember-deep);
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    margin-block-start: 0.25rem;
+  }
+</style>

@@ -1,0 +1,500 @@
+---
+import { getCollection, render } from 'astro:content';
+import ApiTables from '../../components/ApiTables.astro';
+import CodeBlock from '../../components/CodeBlock.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import Base from '../../layouts/Base.astro';
+import { behavior, styledFiles } from '../../lib/elements.ts';
+import { componentsByGroup } from '../../lib/index-markdown.ts';
+import { exampleCode, usageCode } from '../../lib/markdown.ts';
+import { paragraphs } from '../../lib/prose.ts';
+
+export async function getStaticPaths() {
+  const components = await getCollection('components');
+
+  return components.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { element, example, group, summary, tags, title, usage } = entry.data;
+const { Content } = await render(entry);
+const [tag] = tags;
+const styledTag = tag!.replace('slab-', 'slab-styled-');
+
+// The same example as it ships: the headless elements, with no CSS. Its ids
+// are its own, so its buttons open its Dialog rather than the styled one.
+const asItShips = example
+  .replaceAll('slab-styled-', 'slab-')
+  .replaceAll(
+    /\b(id|data-open|data-show|data-announce)="([^"]+)"/g,
+    '$1="$2-as-it-ships"',
+  );
+const files = styledFiles(tags);
+const base = import.meta.env.BASE_URL;
+
+// Every component, by group, for the sidebar.
+const sidebar = (await componentsByGroup()).map(({ components, group }) => ({
+  heading: group,
+  links: components.map((component) => ({
+    current: component.id === entry.id,
+    href: `${base}components/${component.id}/`,
+    text: component.data.title,
+  })),
+}));
+
+// What a project that copies the styled examples needs for Lit's decorators.
+const tsconfig = `{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false
+  }
+}`;
+---
+
+<Base
+  description={summary}
+  markdown={`components/${entry.id}.md`}
+  title={`${title} · Slab`}
+>
+  <div class="layout">
+    <Sidebar label="All components" sections={sidebar} />
+
+    <article class="doc">
+      <header class="intro">
+        <p class="eyebrow">{group}</p>
+        <h1>{title}</h1>
+        <div class="summary" set:html={paragraphs(summary)} />
+        <dl class="facts">
+          <div>
+            <dt>Element</dt>
+            <dd><code>&lt;{tag}&gt;</code></dd>
+          </div>
+          <div>
+            <dt>Built on</dt>
+            <dd><code>{element}</code></dd>
+          </div>
+          <div>
+            <dt>As Markdown</dt>
+            <dd><a href={`${base}components/${entry.id}.md`}>{entry.id}.md</a></dd>
+          </div>
+        </dl>
+      </header>
+
+      <section aria-labelledby="example">
+        <h2 id="example">Example</h2>
+        <p>
+          Here's a styled version, <code>&lt;{styledTag}&gt;</code>. It's not
+          in the package — it's an example of what you can build with the
+          headless element. <a href="#copy">Copy it and make it yours</a> at the
+          bottom of this page. Switch to "As it ships" to see the same markup
+          with the headless element and no CSS at all. That's your starting
+          point.
+        </p>
+
+        <slab-tabs class="example-tabs" label="Example">
+          <slab-tabs-tab panel="styled">Styled example</slab-tabs-tab>
+          <slab-tabs-tab panel="as-it-ships">As it ships</slab-tabs-tab>
+
+          <slab-tabs-panel name="styled">
+            <div class="stage" set:html={example} />
+            <CodeBlock code={exampleCode(example)} label="HTML" lang="html" />
+          </slab-tabs-panel>
+
+          <slab-tabs-panel name="as-it-ships">
+            <div class="stage stage--as-it-ships" set:html={asItShips} />
+            <CodeBlock code={exampleCode(asItShips)} label="HTML" lang="html" />
+          </slab-tabs-panel>
+        </slab-tabs>
+      </section>
+
+      <section aria-labelledby="usage">
+        <h2 id="usage">Usage</h2>
+        <CodeBlock code="pnpm add slab-elements lit" label="Install" lang="sh" />
+        <CodeBlock code={usageCode(tags, usage)} label="HTML" lang="html" />
+      </section>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <section aria-labelledby="behavior" class="prose">
+        <h2 id="behavior">Behavior</h2>
+        {
+          tags.map((name) => (
+            <>
+              {tags.length > 1 && (
+                <h3>
+                  <code>&lt;{name}&gt;</code>
+                </h3>
+              )}
+              <Fragment set:html={paragraphs(behavior(name))} />
+            </>
+          ))
+        }
+      </section>
+
+      <section aria-labelledby="api">
+        <h2 id="api">API</h2>
+        <div class="stack-large">
+          {tags.map((name) => <ApiTables tag={name} />)}
+        </div>
+      </section>
+
+      <section aria-labelledby="copy">
+        <h2 id="copy">Copy and own it</h2>
+        <p>
+          <code>&lt;{styledTag}&gt;</code> isn't in the package. It's an example —
+          copy it into your project and change whatever you want. Under the
+          hood, it's just the headless element, subclassed, with
+          <code>styles</code> set. That's it. Keyboard, focus, ARIA, forms, and
+          events all come from the headless element, and the styles only reach
+          in through <code>::part()</code> and <code>:state()</code>, same as
+          yours would.
+        </p>
+        <p>
+          To use it, copy these files, swap the tag in
+          <code>@customElement()</code> for one of your own, and import it.
+          <code>tokens.styles.ts</code> holds the colors and fonts every styled
+          example shares, so you only need it once.
+        </p>
+        <aside aria-labelledby="typescript" class="note">
+          <h3 id="typescript">TypeScript</h3>
+          <p>
+            These files are TypeScript, and <code>@customElement()</code> is one
+            of Lit's decorators (TypeScript's experimental flavor). You'll need
+            two options in your tsconfig, per
+            <a href="https://lit.dev/docs/components/decorators/#decorators-typescript">Lit's docs</a>:
+            <code>experimentalDecorators</code> to compile them, and
+            <code>useDefineForClassFields</code> turned off so class fields
+            don't stomp on the accessors Lit sets up.
+          </p>
+          <CodeBlock code={tsconfig} label="tsconfig.json" lang="json" />
+          <p>
+            Using plain JavaScript? Drop the types and register the class with
+            <code>customElements.define()</code> instead of the decorator.
+          </p>
+        </aside>
+        {
+          files.map((file) => (
+            <details class="file">
+              <summary>{file.name}</summary>
+              <button class="copy-file" type="button">
+                Copy <span class="visually-hidden">{file.name}</span>
+              </button>
+              <CodeBlock code={file.code} lang="ts" />
+            </details>
+          ))
+        }
+        <p aria-live="polite" class="visually-hidden" data-copy-status></p>
+      </section>
+    </article>
+  </div>
+</Base>
+
+<script>
+  import '../../scripts/examples.ts';
+
+  // Each source file's Copy button copies the file as shown.
+  const status = document.querySelector('[data-copy-status]');
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('.copy-file')) {
+    button.addEventListener('click', async () => {
+      const code = button.closest('details')?.querySelector('pre')?.textContent;
+      const name = button.closest('details')?.querySelector('summary')?.textContent;
+
+      await navigator.clipboard?.writeText(code ?? '');
+
+      if (status) {
+        status.textContent = `Copied ${name} to the clipboard`;
+      }
+    });
+  }
+</script>
+
+<style>
+  .layout {
+    display: grid;
+    gap: 1rem 3rem;
+    grid-template-columns: minmax(0, 1fr);
+    margin-inline: auto;
+    max-inline-size: 78rem;
+    padding: 1.5rem var(--gutter) 4rem;
+  }
+
+  @media (width >= 56rem) {
+    .layout {
+      grid-template-columns: 12rem minmax(0, 1fr);
+    }
+  }
+
+  /*
+    An explicit column, since an implicit one grows to fit its widest content,
+    a line of code, and takes the page wider than a phone.
+  */
+  .doc {
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: minmax(0, 1fr);
+    min-inline-size: 0;
+  }
+
+  .doc > section {
+    display: grid;
+    gap: 1rem;
+    min-inline-size: 0;
+  }
+
+  .intro {
+    border-block-end: 4px solid var(--ink);
+    display: grid;
+    gap: 0.75rem;
+    padding-block-end: 1.5rem;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 6vw, 3.75rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin: 0;
+  }
+
+  .summary :global(p) {
+    font-size: 1.25rem;
+    margin: 0;
+    max-inline-size: 46ch;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: 0.5rem 0 0;
+
+    div {
+      display: grid;
+      gap: 0.125rem;
+    }
+
+    dt {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+    }
+
+    dd {
+      margin: 0;
+      min-inline-size: 0;
+    }
+
+    /* "[role=combobox] + [role=listbox]" is wider than a phone. */
+    code {
+      overflow-wrap: anywhere;
+    }
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .doc > section > p {
+    margin: 0;
+    max-inline-size: 62ch;
+  }
+
+  /*
+    Room for the examples' hard shadows and their popups. Until every element
+    in it is defined, its content is hidden rather than shown as the plain
+    inline text an undefined element renders, and it fades in once they are.
+    The stage keeps its size, so nothing moves.
+  */
+  .stage:has(:not(:defined)) {
+    opacity: 0;
+  }
+
+  /* Before Tabs is registered, only the first panel shows. */
+  slab-tabs:not(:defined) slab-tabs-panel + slab-tabs-panel {
+    display: none;
+  }
+
+  .example-tabs {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .example-tabs::part(tablist) {
+    border-block-end: 3px solid var(--ink);
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .example-tabs > slab-tabs-tab {
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.625rem 1rem;
+
+    &:hover {
+      background-color: var(--paper);
+    }
+
+    &:state(selected) {
+      background-color: var(--ink);
+      color: var(--paper);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--ember);
+      outline-offset: 2px;
+    }
+  }
+
+  .example-tabs > slab-tabs-panel {
+    display: grid;
+    gap: 1rem;
+
+    &:focus-visible {
+      outline: 3px solid var(--ember);
+      outline-offset: 4px;
+    }
+  }
+
+  /* Canvas, so the unstyled elements look as they would on a blank page. */
+  .stage.stage--as-it-ships {
+    background-color: Canvas;
+    color: CanvasText;
+  }
+
+  .stage {
+    transition: opacity 150ms ease-out;
+    background-color: var(--paper);
+    border: 3px solid var(--ink);
+    min-block-size: 10rem;
+    overflow-x: auto;
+    padding: 2rem clamp(1rem, 4vw, 2.5rem) 2.5rem;
+  }
+
+  .prose {
+    max-inline-size: 70ch;
+
+    :global(h2) {
+      font-size: 1.75rem;
+      margin: 0 0 1rem;
+    }
+
+    :global(h3) {
+      font-size: 1.25rem;
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    :global(p) {
+      margin: 0 0 1rem;
+    }
+
+    /*
+      Full width, as a table rather than a scrolling block, so its header spans
+      it. Each is a Keyboard table of two columns, and the second wraps, so it
+      fits a phone without scrolling.
+    */
+    :global(table) {
+      background-color: var(--paper);
+      border: 2px solid var(--ink);
+      border-collapse: collapse;
+      font-size: 0.9375rem;
+      inline-size: 100%;
+      margin-block-end: 1rem;
+    }
+
+    :global(th),
+    :global(td) {
+      border-block-end: 1px solid var(--page);
+      padding: 0.5rem 0.875rem;
+      text-align: start;
+      vertical-align: top;
+    }
+
+    :global(th) {
+      background-color: var(--ink);
+      color: var(--paper);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* Wraps after a comma in a list of keys, so a long one fits a phone. */
+    :global(td:first-child) {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage {
+      transition: none;
+    }
+  }
+
+  .stack-large {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .file {
+    background-color: var(--paper);
+    border: 2px solid var(--ink);
+
+    summary {
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      padding: 0.75rem 1rem;
+    }
+
+    &[open] summary {
+      border-block-end: 2px solid var(--ink);
+    }
+
+    :global(.code) {
+      border: 0;
+    }
+  }
+
+  .note {
+    background-color: var(--paper);
+    border: 2px solid var(--ink);
+    border-inline-start: 8px solid var(--ember);
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+
+    h3 {
+      font-size: 1.25rem;
+      margin: 0;
+    }
+
+    p {
+      margin: 0;
+      max-inline-size: 62ch;
+    }
+  }
+
+  .copy-file {
+    background-color: var(--ink);
+    border: 0;
+    color: var(--paper);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+
+    &:hover {
+      background-color: var(--ember-deep);
+    }
+  }
+</style>

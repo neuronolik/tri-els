@@ -1,0 +1,31 @@
+---
+// The mark: five rectangles on the 12 × 6.6 grid in .github/logos. Its
+// courses take `color`, so it's ink on paper and paper on ink. Decorative,
+// since it's always beside the word "Slab".
+interface Props {
+  size?: number;
+}
+
+const { size = 30 } = Astro.props;
+---
+
+<svg
+  aria-hidden="true"
+  class="logo"
+  height={(size * 6.6) / 12}
+  viewBox="0 0 12 6.6"
+  width={size}
+>
+  <rect fill="currentColor" height="1.8" width="5.7" x="0" y="0"></rect>
+  <rect fill="currentColor" height="1.8" width="5.7" x="6.3" y="0"></rect>
+  <rect fill="currentColor" height="1.8" width="2.8" x="0" y="2.4"></rect>
+  <rect fill="currentColor" height="1.8" width="8.6" x="3.4" y="2.4"></rect>
+  <rect fill="var(--ember)" height="1.8" width="12" x="0" y="4.8"></rect>
+</svg>
+
+<style>
+  .logo {
+    display: block;
+    flex-shrink: 0;
+  }
+</style>

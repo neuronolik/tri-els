@@ -1,0 +1,73 @@
+# Paused. Every workflow here runs on `workflow_dispatch` only, so nothing runs
+# on a push or a pull request and nothing bills minutes. The triggers each one
+# used are commented out below, so switching them back on is a matter of
+# deleting the `workflow_dispatch` line and uncommenting them.
+
+name: On Push Branch "main"
+
+on:
+  workflow_dispatch:
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -eu -o pipefail {0}
+
+jobs:
+  install-dependencies:
+    name: Install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: ./.github/actions/pnpm
+
+  release-preview:
+    name: Release Preview
+    permissions:
+      contents: write
+      pull-requests: write
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    needs:
+      - install-dependencies
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: ./.github/actions/pnpm
+      - name: Create Release Pull Request
+        id: changesets
+        uses: changesets/action@06245a4e0a36c064a573d4150030f5ec548e4fcc # v1.4.10
+        with:
+          title: Release Preview
+          commit: Version package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs:
+      - install-dependencies
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: ./.github/actions/pnpm
+      - name: Build Storybook
+        run: pnpm start
+        env:
+          BASE_URL: main
+          NODE_ENV: production
+      - name: Upload Storybook
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: storybook
+          path: dist/storybook

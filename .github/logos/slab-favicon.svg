@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="Slab">
+  <title>Slab</title>
+  <!--
+    Avatar tile: the reversed mark on ink, matching the 88px tile in the
+    identity sheet, where the mark is 0.636 of the tile width.
+    32 x 0.636 = 20.4 wide, so the 12-unit mark scales by 1.7.
+  -->
+  <rect width="32" height="32" fill="#1C1C1C" />
+  <g transform="translate(5.8 10.39) scale(1.7)">
+    <g fill="#F2F2EF">
+      <rect x="0" y="0" width="5.7" height="1.8" />
+      <rect x="6.3" y="0" width="5.7" height="1.8" />
+      <rect x="0" y="2.4" width="2.8" height="1.8" />
+      <rect x="3.4" y="2.4" width="8.6" height="1.8" />
+    </g>
+    <rect x="0" y="4.8" width="12" height="1.8" fill="#D9492A" />
+  </g>
+</svg>

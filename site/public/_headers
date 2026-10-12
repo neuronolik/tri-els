@@ -1,0 +1,13 @@
+# Response headers for every page, read by Cloudflare from the build output.
+#
+# No full Content-Security-Policy: it would need a hash of the inline theme
+# script in the layout, which breaks the theme whenever that script changes.
+# `frame-ancestors` is the part worth having without one: no other site can
+# frame these pages.
+/*
+  Content-Security-Policy: frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cross-Origin-Opener-Policy: same-origin
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=(), usb=()
