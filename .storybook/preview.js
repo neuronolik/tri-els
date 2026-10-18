@@ -301,6 +301,18 @@ export default {
             }
           }
 
+          if (component === 'toggle-group') {
+            for (const $button of $component.querySelectorAll(
+              'slab-toggle-group-button',
+            )) {
+              $button.removeAttribute('aria-disabled');
+              $button.removeAttribute('aria-label');
+              $button.removeAttribute('aria-pressed');
+              $button.removeAttribute('role');
+              $button.removeAttribute('tabindex');
+            }
+          }
+
           if (
             component === 'listbox' ||
             component === 'combobox' ||
