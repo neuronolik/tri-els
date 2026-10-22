@@ -180,6 +180,10 @@ test(
   'selects a range via Enter and Space, previewing it to the focused day',
   { tag: '@keyboard' },
   async ({ callMethod, render, page }) => {
+    // A day that's today also has a `today` part. A today in a month this
+    // doesn't show keeps the parts below the same whatever day it runs.
+    await page.clock.setFixedTime(new Date('2026-01-15T12:00:00'));
+
     await render(
       () =>
         html`<slab-calendar

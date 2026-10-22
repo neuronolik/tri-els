@@ -39,6 +39,10 @@ test(
   'shows the month of a `value` set programmatically, and ignores one that isn’t a date',
   { tag: '@miscellaneous' },
   async ({ render, page, setProperty }) => {
+    // A day that's today also has a `today` part. A today in a month this
+    // doesn't show keeps the parts below the same whatever day it runs.
+    await page.clock.setFixedTime(new Date('2026-01-15T12:00:00'));
+
     await render(
       () => html`<slab-calendar value="2026-10-15"></slab-calendar>`,
     );
@@ -141,6 +145,10 @@ test(
   'shows the month of a range `value`, and ignores one that isn’t a range',
   { tag: '@miscellaneous' },
   async ({ render, page, setProperty }) => {
+    // A day that's today also has a `today` part. A today in a month this
+    // doesn't show keeps the parts below the same whatever day it runs.
+    await page.clock.setFixedTime(new Date('2026-01-15T12:00:00'));
+
     await render(
       () =>
         html`<slab-calendar
